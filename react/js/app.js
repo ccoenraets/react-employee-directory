@@ -16,7 +16,7 @@ var SearchBar = React.createClass({
     render: function () {
         return (
             <div className="bar bar-standard bar-header-secondary">
-                <input type="search" ref="searchKey" onChange={this.searchHandler}/>
+                <input type="search" ref="searchKey" onChange={this.searchHandler} value={this.props.searchKey}/>
             </div>
 
         );
@@ -53,22 +53,13 @@ var EmployeeList = React.createClass({
 });
 
 var HomePage = React.createClass({
-    getInitialState: function() {
-        return {employees: []}
-    },
-    searchHandler:function(key) {
-        var self = this;
-        this.props.service.findByName(key).done(function(result) {
-            self.setState({searchKey: key, employees: result});
-        });
-    },
     render: function () {
         return (
             <div>
                 <Header text="Employee Directory" back="false"/>
-                <SearchBar searchHandler={this.searchHandler}/>
+                <SearchBar searchKey={this.props.searchKey} searchHandler={this.props.searchHandler}/>
                 <div className="content">
-                    <EmployeeList employees={this.state.employees}/>
+                    <EmployeeList employees={this.props.employees}/>
                 </div>
             </div>
         );
@@ -139,17 +130,33 @@ var EmployeePage = React.createClass({
     }
 });
 
-router.addRoute('', function() {
-    React.render(
-        <HomePage service={employeeService}/>,
-        document.body
-    );
+var App = React.createClass({
+    getInitialState: function() {
+        return {
+            searchKey: '',
+            employees: [],
+            page: null
+        }
+    },
+    searchHandler: function(searchKey) {
+        var self = this;
+        employeeService.findByName(searchKey).done(function(employees) {
+            self.setState({searchKey:searchKey, employees: employees, page: <HomePage searchKey={searchKey} searchHandler={self.searchHandler} employees={employees}/>});
+        });
+    },
+    componentDidMount: function() {
+        var self = this;
+        router.addRoute('', function() {
+            self.setState({page: <HomePage searchKey={self.state.searchKey} searchHandler={self.searchHandler} employees={self.state.employees}/>});
+        });
+        router.addRoute('employees/:id', function(id) {
+            self.setState({page: <EmployeePage employeeId={id} service={employeeService}/>});
+        });
+        router.start();
+    },
+    render: function() {
+        return this.state.page;
+    }
 });
 
-router.addRoute('employees/:id', function(id) {
-    React.render(
-        <EmployeePage employeeId={id} service={employeeService}/>,
-        document.body
-    );
-});
-router.start();
+React.render(<App/>, document.body);
