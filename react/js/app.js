@@ -7,9 +7,12 @@ var Header = React.createClass({
 });
 
 var SearchBar = React.createClass({
+    searchHandler: function() {
+        this.props.searchHandler(this.refs.searchKey.getDOMNode().value);
+    },
     render: function () {
         return (
-            <input type="search" />
+            <input type="search" ref="searchKey" onChange={this.searchHandler}/>
         );
     }
 });
@@ -30,7 +33,7 @@ var EmployeeList = React.createClass({
     render: function () {
         var items = this.props.employees.map(function (employee) {
             return (
-                <EmployeeListItem key={employee.id} employee={employee} />
+                <EmployeeListItem key={employee.id} employee={employee}/>
             );
         });
         return (
@@ -42,6 +45,9 @@ var EmployeeList = React.createClass({
 });
 
 var HomePage = React.createClass({
+    searchHandler:function(key) {
+        alert('Search key: ' + key);
+    },
     render: function () {
         var employees = [
             {firstName: 'Christophe', lastName: 'Coenraets'},
@@ -51,7 +57,7 @@ var HomePage = React.createClass({
         return (
             <div>
                 <Header text="Employee Directory"/>
-                <SearchBar />
+                <SearchBar searchHandler={this.searchHandler}/>
                 <EmployeeList employees={employees}/>
             </div>
         );
@@ -59,6 +65,6 @@ var HomePage = React.createClass({
 });
 
 React.render(
-    <HomePage />,
+    <HomePage/>,
     document.body
 );
