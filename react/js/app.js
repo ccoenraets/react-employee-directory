@@ -65,7 +65,38 @@ var HomePage = React.createClass({
     }
 });
 
-React.render(
-    <HomePage service={employeeService}/>,
-    document.body
-);
+var EmployeePage = React.createClass({
+    getInitialState: function() {
+        return {employee: {}};
+    },
+    componentDidMount: function() {
+        var self = this;
+        this.props.service.findById(this.props.employeeId).done(function(result) {
+            self.setState({employee: result});
+        });
+    },
+    render: function () {
+        return (
+            <div>
+                <Header text="Employee Details"/>
+                <h3>{this.state.employee.firstName} {this.state.employee.lastName}</h3>
+                {this.state.employee.title}
+            </div>
+        );
+    }
+});
+
+router.addRoute('', function() {
+    React.render(
+        <HomePage service={employeeService}/>,
+        document.body
+    );
+});
+
+router.addRoute('employees/:id', function(id) {
+    React.render(
+        <EmployeePage employeeId={id} service={employeeService}/>,
+        document.body
+    );
+});
+router.start();
