@@ -33,7 +33,7 @@ var EmployeeList = React.createClass({
     render: function () {
         var items = this.props.employees.map(function (employee) {
             return (
-                <EmployeeListItem key={employee.id} employee={employee}/>
+                <EmployeeListItem key={employee.id} employee={employee} />
             );
         });
         return (
@@ -45,26 +45,27 @@ var EmployeeList = React.createClass({
 });
 
 var HomePage = React.createClass({
+    getInitialState: function() {
+        return {employees: []}
+    },
     searchHandler:function(key) {
-        alert('Search key: ' + key);
+        var self = this;
+        this.props.service.findByName(key).done(function(result) {
+            self.setState({searchKey: key, employees: result});
+        });
     },
     render: function () {
-        var employees = [
-            {firstName: 'Christophe', lastName: 'Coenraets'},
-            {firstName: 'Lisa', lastName: 'Jones'},
-            {firstName: 'John', lastName: 'Smith'}
-        ];
         return (
             <div>
                 <Header text="Employee Directory"/>
                 <SearchBar searchHandler={this.searchHandler}/>
-                <EmployeeList employees={employees}/>
+                <EmployeeList employees={this.state.employees}/>
             </div>
         );
     }
 });
 
 React.render(
-    <HomePage/>,
+    <HomePage service={employeeService}/>,
     document.body
 );
