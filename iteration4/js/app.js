@@ -49,10 +49,9 @@ var HomePage = React.createClass({
         return {employees: []}
     },
     searchHandler:function(key) {
-        var self = this;
         this.props.service.findByName(key).done(function(result) {
-            self.setState({searchKey: key, employees: result});
-        });
+            this.setState({searchKey: key, employees: result});
+        }.bind(this));
     },
     render: function () {
         return (

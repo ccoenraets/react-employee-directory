@@ -71,10 +71,9 @@ var EmployeePage = React.createClass({
         return {employee: {}};
     },
     componentDidMount: function() {
-        var self = this;
         this.props.service.findById(this.props.employeeId).done(function(result) {
-            self.setState({employee: result});
-        });
+            this.setState({employee: result});
+        }.bind(this));
     },
     render: function () {
         return (
@@ -139,19 +138,17 @@ var App = React.createClass({
         }
     },
     searchHandler: function(searchKey) {
-        var self = this;
         employeeService.findByName(searchKey).done(function(employees) {
-            self.setState({searchKey:searchKey, employees: employees, page: <HomePage searchKey={searchKey} searchHandler={self.searchHandler} employees={employees}/>});
-        });
+            this.setState({searchKey:searchKey, employees: employees, page: <HomePage searchKey={searchKey} searchHandler={this.searchHandler} employees={employees}/>});
+        }.bind(this));
     },
     componentDidMount: function() {
-        var self = this;
         router.addRoute('', function() {
-            self.setState({page: <HomePage searchKey={self.state.searchKey} searchHandler={self.searchHandler} employees={self.state.employees}/>});
-        });
+            this.setState({page: <HomePage searchKey={this.state.searchKey} searchHandler={this.searchHandler} employees={this.state.employees}/>});
+        }.bind(this));
         router.addRoute('employees/:id', function(id) {
-            self.setState({page: <EmployeePage employeeId={id} service={employeeService}/>});
-        });
+            this.setState({page: <EmployeePage employeeId={id} service={employeeService}/>});
+        }.bind(this));
         router.start();
     },
     render: function() {
