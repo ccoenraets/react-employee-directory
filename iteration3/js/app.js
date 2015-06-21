@@ -7,12 +7,17 @@ var Header = React.createClass({
 });
 
 var SearchBar = React.createClass({
-    searchHandler: function() {
-        this.props.searchHandler(this.refs.searchKey.getDOMNode().value);
+    getInitialState: function() {
+        return {searchKey: ""};
+    },
+    searchHandler: function(event) {
+        var searchKey = event.target.value;
+        this.setState({searchKey: searchKey});
+        this.props.searchHandler(searchKey);
     },
     render: function () {
         return (
-            <input type="search" ref="searchKey" onChange={this.searchHandler}/>
+            <input type="search" value={this.state.symbol} onChange={this.searchHandler}/>
         );
     }
 });
